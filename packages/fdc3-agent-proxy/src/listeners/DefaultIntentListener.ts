@@ -11,24 +11,31 @@ import {
 } from '@finos/fdc3-schema/dist/generated/api/BrowserTypes.js';
 
 export class DefaultIntentListener extends AbstractListener<IntentHandler, AddIntentListenerRequest> {
-  readonly intent: string;
-
-  constructor(messaging: Messaging, intent: string, action: IntentHandler, messageExchangeTimeout: number) {
+  constructor(
+    messaging: Messaging,
+    private readonly intent: string,
+    private readonly contextTypes: string[] | undefined,
+    action: IntentHandler,
+    messageExchangeTimeout: number
+  ) {
     super(
       messaging,
       messageExchangeTimeout,
-      { intent },
+      { intent, contextTypes },
       action,
       'addIntentListenerRequest',
       'addIntentListenerResponse',
       'intentListenerUnsubscribeRequest',
       'intentListenerUnsubscribeResponse'
     );
-    this.intent = intent;
   }
 
   filter(m: IntentEvent): boolean {
-    return m.type == 'intentEvent' && m.payload.intent == this.intent;
+    return (
+      m.type == 'intentEvent' &&
+      m.payload.intent == this.intent &&
+      (this.contextTypes == null || this.contextTypes.includes(m.payload.context.type))
+    );
   }
 
   action(m: IntentEvent): void {
