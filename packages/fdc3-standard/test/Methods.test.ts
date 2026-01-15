@@ -1,4 +1,5 @@
-import { mock } from 'jest-mock-extended';
+import { vi, beforeEach, beforeAll, afterAll, describe, test, expect } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 import {
   addContextListener,
   addIntentListener,
@@ -41,16 +42,16 @@ const ContactContext = {
 expect.extend({
   toRejectWithUnavailableError(received) {
     expect(received).rejects.toEqual(UnavailableError);
-    return { pass: true } as jest.CustomMatcherResult;
+    return { pass: true, message: () => '' };
   },
   toThrowUnavailableError(received) {
     expect(received).toThrowError(UnavailableError);
-    return { pass: true } as jest.CustomMatcherResult;
+    return { pass: true, message: () => '' };
   },
 });
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('test ES6 module', () => {
