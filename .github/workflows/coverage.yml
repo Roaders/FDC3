@@ -58,6 +58,9 @@ jobs:
       with:
         file-path: test-summary.md
 
+    - name: Debug coverage file
+      run: cat nyc-coverage-report/coverage-summary.json | head -c 1000
+
     - name: Download previous coverage
       uses: dawidd6/action-download-artifact@v7
       with:
@@ -65,6 +68,9 @@ jobs:
         name: 'test-coverage-output'
         path: base-artifacts
         search_artifacts: true
+
+    - name: Debug base coverage file
+      run: cat base-artifacts/coverage-summary.json | head -c 1000
 
     - name: Report Coverage
       if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
