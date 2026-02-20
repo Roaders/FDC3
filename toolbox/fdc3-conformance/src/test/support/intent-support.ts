@@ -10,12 +10,9 @@ import {
   DesktopAgent,
   getOrCreateChannel,
 } from '@finos/fdc3';
-import { APIDocumentation } from './apiDocuments';
 import constants from '../../constants';
-import { handleFail, wait, wrapPromise } from '../../utils';
+import { appIdMatches, handleFail, wait, wrapPromise } from '../../utils';
 import { AppControlContext, IntentUtilityContext } from '../../context-types';
-
-const raiseIntentDocs = '\r\nDocumentation: ' + APIDocumentation.raiseIntent + '\r\nCause';
 
 export class RaiseIntentControl {
   private readonly fdc3: DesktopAgent;
@@ -190,11 +187,26 @@ export class RaiseIntentControl {
 
   validateIntentResolution = (appId: string, intentResolution: IntentResolution) => {
     if (typeof intentResolution.source === 'object') {
-      expect(intentResolution.source as AppIdentifier).to.have.property('appId');
-      expect(intentResolution.source as AppIdentifier).to.have.property('instanceId');
-      expect(typeof intentResolution.source.instanceId).to.be.equal('string');
-      expect(intentResolution.source.instanceId).to.not.be.equal('');
-      expect((intentResolution.source as AppIdentifier).appId).to.eq(appId, raiseIntentDocs);
+      expect(
+        appIdMatches(intentResolution.source.appId, appId),
+        `Intent Resolution source was expected to be '${appId}' but was '${intentResolution.source.appId}'`
+      ).to.be.true;
+      expect(
+        intentResolution.source as AppIdentifier,
+        'IntentResolution source should have appId property'
+      ).to.have.property('appId');
+      expect(
+        intentResolution.source as AppIdentifier,
+        'IntentResolution source should have instanceId property'
+      ).to.have.property('instanceId');
+      expect(
+        typeof intentResolution.source.instanceId,
+        'IntentResolution source instanceId should be of type string'
+      ).to.be.equal('string');
+      expect(
+        intentResolution.source.instanceId,
+        'IntentResolution source instanceId should not be empty string'
+      ).to.not.be.equal('');
     } else assert.fail('Invalid intent resolution object');
   };
 
