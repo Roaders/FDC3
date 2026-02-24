@@ -1,4 +1,5 @@
-import { ChannelError, PrivateChannel, Listener, getAgent, DesktopAgent } from '@finos/fdc3';
+import { ChannelError, PrivateChannel, Listener, DesktopAgent } from '@finos/fdc3';
+import { getAgent } from '@morgan-stanley/fdc3-web';
 import { assert, expect } from 'chai';
 import {
   RaiseIntentControl,

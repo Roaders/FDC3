@@ -1,4 +1,5 @@
-import { DesktopAgent, getAgent, ResolveError } from '@finos/fdc3';
+import { DesktopAgent, ResolveError } from '@finos/fdc3';
+import { getAgent } from '@morgan-stanley/fdc3-web';
 import { assert, expect } from 'chai';
 import { APIDocumentation } from '../support/apiDocuments';
 import { ContextType, IntentApp, Intent, RaiseIntentControl } from '../support/intent-support';

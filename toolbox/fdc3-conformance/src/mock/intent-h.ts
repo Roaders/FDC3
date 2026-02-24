@@ -1,4 +1,4 @@
-import { getAgent } from '@finos/fdc3';
+import { getAgent } from '@morgan-stanley/fdc3-web';
 import { closeWindowOnCompletion } from './mock-functions';
 
 getAgent().then(async fdc3 => {

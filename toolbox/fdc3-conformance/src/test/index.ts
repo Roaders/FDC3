@@ -1,5 +1,5 @@
 export * from './testSuite';
-import { getAgent } from '@finos/fdc3';
+import { getAgent } from '@morgan-stanley/fdc3-web';
 import { getPackMembers, getPackNames, executeTestsInBrowser, executeManualTestsInBrowser } from './testSuite';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports

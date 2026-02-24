@@ -1,5 +1,5 @@
 import { closeWindowOnCompletion } from './mock-functions';
-import { getAgent } from '@finos/fdc3';
+import { getAgent } from '@morgan-stanley/fdc3-web';
 
 getAgent().then(async fdc3 => {
   await closeWindowOnCompletion(fdc3);

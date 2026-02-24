@@ -4,7 +4,7 @@ import { JOIN_AND_BROADCAST, JOIN_AND_BROADCAST_TWICE } from '../support/channel
 import constants from '../../constants';
 import { Context } from '@finos/fdc3';
 import { ChannelControlImpl } from '../support/channels-support';
-import { getAgent } from '@finos/fdc3';
+import { getAgent } from '@morgan-stanley/fdc3-web';
 import { APIDocumentation } from '../support/apiDocuments';
 
 const documentation = '\r\nDocumentation: ' + APIDocumentation.desktopAgent + '\r\nCause:';
