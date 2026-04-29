@@ -352,22 +352,20 @@ export interface DesktopAgent {
    * ```
    */
   addIntentListener(intent: Intent, handler: IntentHandler): Promise<Listener>;
-
   /**
-   * Adds a listener for incoming intents raised by other applications, via calls to `fdc3.raiseIntent` or `fdc3.raiseIntentForContext, but filters intents for one or more context types. See `addIntentListener` for details and restrictions for both usage and implementation.
+   * Adds a listener for incoming intents raised by other applications, but filters incoming
+   * intents to only those whose context matches one of the provided context types. See
+   * `addIntentListener(intent, handler)` for details and restrictions on usage and implementation.
    *
-   * //Handle a raised intent
-   * const listener = fdc3.addIntentListenerWithContext('StartChat', 'fdc3.contact', context => {
+   * ```javascript
+   * //Handle a raised intent only when the context is fdc3.contact
+   * const listener = fdc3.addIntentListener('StartChat', 'fdc3.contact', context => {
    *     // start chat has been requested by another application
    *     return;
    * });
+   * ```
    */
-
-  addIntentListenerWithContext(
-    intent: Intent,
-    contextType: string | string[],
-    handler: IntentHandler
-  ): Promise<Listener>;
+  addIntentListener(intent: Intent, contextType: string | string[], handler: IntentHandler): Promise<Listener>;
 
   /**
    * Adds a listener for incoming context broadcasts from the Desktop Agent (via a User channel or `fdc3.open`API call. If the consumer is only interested in a context of a particular type, they can they can specify that type. If the consumer is able to receive context of any type or will inspect types received, then they can pass `null` as the `contextType` parameter to receive all context types.

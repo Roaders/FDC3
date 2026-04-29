@@ -104,8 +104,24 @@ export function raiseIntentForContext(context: Context, app?: AppIdentifier | st
  * @deprecated Importing individual FDC3 API calls is deprecated. Use `getAgent` to retrieve
  * an FDC3 API reference and use the functions that it provides instead.
  */
-export function addIntentListener(intent: Intent, handler: IntentHandler): Promise<Listener> {
-  return window.fdc3 ? window.fdc3.addIntentListener(intent, handler) : Promise.reject(UnavailableError);
+export function addIntentListener(intent: Intent, handler: IntentHandler): Promise<Listener>;
+export function addIntentListener(
+  intent: Intent,
+  contextType: string | string[],
+  handler: IntentHandler
+): Promise<Listener>;
+export function addIntentListener(
+  intent: Intent,
+  contextTypeOrHandler: string | string[] | IntentHandler,
+  handler?: IntentHandler
+): Promise<Listener> {
+  if (!window.fdc3) {
+    return Promise.reject(UnavailableError);
+  }
+  if (typeof contextTypeOrHandler === 'function') {
+    return window.fdc3.addIntentListener(intent, contextTypeOrHandler);
+  }
+  return window.fdc3.addIntentListener(intent, contextTypeOrHandler, handler!);
 }
 
 /**

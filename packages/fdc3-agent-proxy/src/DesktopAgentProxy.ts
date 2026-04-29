@@ -66,7 +66,6 @@ export class DesktopAgentProxy implements DesktopAgent, Connectable {
     this.findIntentsByContext = this.findIntentsByContext.bind(this);
     this.raiseIntent = this.raiseIntent.bind(this);
     this.addIntentListener = this.addIntentListener.bind(this);
-    this.addIntentListenerWithContext = this.addIntentListenerWithContext.bind(this);
     this.raiseIntentForContext = this.raiseIntentForContext.bind(this);
     this.open = this.open.bind(this);
     this.findInstances = this.findInstances.bind(this);
@@ -174,12 +173,17 @@ export class DesktopAgentProxy implements DesktopAgent, Connectable {
     return this.intents.raiseIntent(intent, context, this.ensureAppId(app));
   }
 
-  addIntentListener(intent: string, handler: IntentHandler) {
-    return this.intents.addIntentListener(intent, handler);
-  }
-
-  addIntentListenerWithContext(intent: string, contextType: string | string[], handler: IntentHandler) {
-    return this.intents.addIntentListenerWithContext(intent, contextType, handler);
+  addIntentListener(intent: string, handler: IntentHandler): Promise<Listener>;
+  addIntentListener(intent: string, contextType: string | string[], handler: IntentHandler): Promise<Listener>;
+  addIntentListener(
+    intent: string,
+    contextTypeOrHandler: string | string[] | IntentHandler,
+    handler?: IntentHandler
+  ): Promise<Listener> {
+    if (typeof contextTypeOrHandler === 'function') {
+      return this.intents.addIntentListener(intent, contextTypeOrHandler);
+    }
+    return this.intents.addIntentListenerWithContext(intent, contextTypeOrHandler, handler!);
   }
 
   raiseIntentForContext(context: Context, app?: string | AppIdentifier): Promise<IntentResolution> {

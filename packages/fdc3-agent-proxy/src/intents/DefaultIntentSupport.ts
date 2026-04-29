@@ -227,13 +227,8 @@ export class DefaultIntentSupport implements IntentSupport {
     contextType: string | string[],
     handler: IntentHandler
   ): Promise<Listener> {
-    const out = new DefaultIntentListener(
-      this.messaging,
-      intent,
-      Array.isArray(contextType) ? contextType : [contextType],
-      handler,
-      this.messageExchangeTimeout
-    );
+    const contextTypes = Array.isArray(contextType) ? contextType : [contextType];
+    const out = new DefaultIntentListener(this.messaging, intent, contextTypes, handler, this.messageExchangeTimeout);
     await out.register();
     return out;
   }
