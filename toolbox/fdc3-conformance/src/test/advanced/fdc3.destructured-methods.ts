@@ -7,6 +7,38 @@ import { ContextType, Intent, IntentApp } from '../support/intent-support';
 
 const documentation = '\r\nDocumentation: ' + APIDocumentation.desktopAgent + '\r\nCause';
 
+type DesktopAgentFunctionNames = keyof {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [K in keyof DesktopAgent as DesktopAgent[K] extends (...args: any[]) => any ? K : never]: true;
+};
+
+const desktopAgentFunctionNames: Record<DesktopAgentFunctionNames, true> = {
+  findIntent: true,
+  findIntentsByContext: true,
+  open: true,
+  findInstances: true,
+  getAppMetadata: true,
+  raiseIntent: true,
+  raiseIntentForContext: true,
+  createPrivateChannel: true,
+  close: true,
+  broadcast: true,
+  addIntentListener: true,
+  addIntentListenerWithContext: true,
+  addContextListener: true,
+  addEventListener: true,
+  getUserChannels: true,
+  joinUserChannel: true,
+  getOrCreateChannel: true,
+  getCurrentChannel: true,
+  leaveCurrentChannel: true,
+  getInfo: true,
+};
+
+function capitalize(name: string): string {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 export default async () =>
   describe('fdc3.destructuredMethods', () => {
     let fdc3: DesktopAgent;
@@ -23,111 +55,120 @@ export default async () =>
       }
     });
 
-    it('(DestructuredFindIntent) findIntent should remain callable when destructured', async () => {
-      try {
-        const { findIntent } = fdc3;
-        const appIntent = await findIntent(Intent.aTestingIntent, { type: ContextType.testContextX });
+    (Object.keys(desktopAgentFunctionNames) as Array<DesktopAgentFunctionNames>).forEach(functionName => {
+      it(`(Destructured${capitalize(functionName)}) ${functionName} should remain callable when destructured`, async () => {
+        try {
+          // const {[functionName]: destructuredFunction} = fdc3;
 
-        expect(appIntent.intent.name, documentation).to.equal(Intent.aTestingIntent);
-        expect(appIntent.apps, documentation).to.have.length(1);
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.findIntent, ex);
-      }
-    });
+          //await destructuredFunction();
 
-    it('(DestructuredFindIntentsByContext) findIntentsByContext should remain callable when destructured', async () => {
-      try {
-        const { findIntentsByContext } = fdc3;
-        const appIntents = await findIntentsByContext({ type: ContextType.testContextX });
+          switch (functionName) {
+            case 'findIntent': {
+              const { findIntent } = fdc3;
+              const appIntent = await findIntent(Intent.aTestingIntent, { type: ContextType.testContextX });
 
-        expect(appIntents, documentation).to.be.an('array');
-        expect(appIntents.length, documentation).to.be.greaterThan(0);
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.findIntentsByContext, ex);
-      }
-    });
+              expect(appIntent.intent.name, documentation).to.equal(Intent.aTestingIntent);
+              expect(appIntent.apps, documentation).to.have.length(1);
+              break;
+            }
 
-    it('(DestructuredOpen) open should remain callable when destructured', async () => {
-      try {
-        const { open } = fdc3;
-        const appIdentifier = await open({ appId: IntentApp.IntentAppA });
-        openedWindows = 1;
+            case 'findIntentsByContext': {
+              const { findIntentsByContext } = fdc3;
+              const appIntents = await findIntentsByContext({ type: ContextType.testContextX });
 
-        validateAppIdentifier(appIdentifier);
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.open, ex);
-      }
-    });
+              expect(appIntents, documentation).to.be.an('array');
+              expect(appIntents.length, documentation).to.be.greaterThan(0);
+              break;
+            }
 
-    it('(DestructuredFindInstances) findInstances should remain callable when destructured', async () => {
-      try {
-        const { findInstances, open } = fdc3;
-        const appIdentifier1 = await open({ appId: IntentApp.IntentAppA });
-        const appIdentifier2 = await open({ appId: IntentApp.IntentAppA });
-        openedWindows = 2;
+            case 'open': {
+              const { open } = fdc3;
+              const appIdentifier = await open({ appId: IntentApp.IntentAppA });
+              openedWindows = 1;
 
-        const instances = await findInstances({ appId: IntentApp.IntentAppA });
+              validateAppIdentifier(appIdentifier);
+              break;
+            }
 
-        expect(
-          instances.some(instance => sameAppIdentifier(instance, appIdentifier1)),
-          documentation
-        ).to.equal(true);
-        expect(
-          instances.some(instance => sameAppIdentifier(instance, appIdentifier2)),
-          documentation
-        ).to.equal(true);
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.findInstances, ex);
-      }
-    });
+            case 'findInstances': {
+              const { findInstances, open } = fdc3;
+              const appIdentifier1 = await open({ appId: IntentApp.IntentAppA });
+              const appIdentifier2 = await open({ appId: IntentApp.IntentAppA });
+              openedWindows = 2;
 
-    it('(DestructuredGetAppMetadata) getAppMetadata should remain callable when destructured', async () => {
-      try {
-        const { getAppMetadata } = fdc3;
-        const metadata = await getAppMetadata();
+              const instances = await findInstances({ appId: IntentApp.IntentAppA });
 
-        expect(metadata, documentation).to.have.property('appId');
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.appMetadata, ex);
-      }
-    });
+              expect(
+                instances.some(instance => sameAppIdentifier(instance, appIdentifier1)),
+                documentation
+              ).to.equal(true);
+              expect(
+                instances.some(instance => sameAppIdentifier(instance, appIdentifier2)),
+                documentation
+              ).to.equal(true);
+              break;
+            }
 
-    it('(DestructuredRaiseIntent) raiseIntent should remain callable when destructured', async () => {
-      try {
-        const { raiseIntent } = fdc3;
-        const intentResolution = await raiseIntent(Intent.aTestingIntent, { type: ContextType.testContextX });
-        openedWindows = 1;
+            case 'getAppMetadata': {
+              const { getAppMetadata } = fdc3;
+              const metadata = await getAppMetadata();
 
-        validateIntentResolution(intentResolution);
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.raiseIntent, ex);
-      }
-    });
+              expect(metadata, documentation).to.have.property('appId');
+              break;
+            }
 
-    it('(DestructuredRaiseIntentForContext) raiseIntentForContext should remain callable when destructured', async () => {
-      try {
-        const { raiseIntentForContext } = fdc3;
-        const intentResolution = await raiseIntentForContext({ type: ContextType.testContextZ });
-        openedWindows = 1;
+            case 'raiseIntent': {
+              const { raiseIntent } = fdc3;
+              const intentResolution = await raiseIntent(Intent.aTestingIntent, { type: ContextType.testContextX });
+              openedWindows = 1;
 
-        validateIntentResolution(intentResolution);
-      } catch (ex) {
-        handleFail(documentation + '\r\n' + APIDocumentation.raiseIntentForContext, ex);
-      }
-    });
+              validateIntentResolution(intentResolution);
+              break;
+            }
 
-    it('(DestructuredCreatePrivateChannel) createPrivateChannel should remain callable when destructured', async () => {
-      try {
-        const { createPrivateChannel } = fdc3;
-        const privateChannel = await createPrivateChannel();
+            case 'raiseIntentForContext': {
+              const { raiseIntentForContext } = fdc3;
+              const intentResolution = await raiseIntentForContext({ type: ContextType.testContextZ });
+              openedWindows = 1;
 
-        validatePrivateChannel(privateChannel);
-        privateChannel.disconnect();
-      } catch (ex) {
-        handleFail(documentation, ex);
-      }
+              validateIntentResolution(intentResolution);
+              break;
+            }
+
+            case 'createPrivateChannel': {
+              const { createPrivateChannel } = fdc3;
+              const privateChannel = await createPrivateChannel();
+
+              validatePrivateChannel(privateChannel);
+              privateChannel.disconnect();
+              break;
+            }
+          }
+        } catch (ex) {
+          handleFail(documentation + '\r\n' + apiDocumentationFor(functionName), ex);
+        }
+      });
     });
   });
+
+function apiDocumentationFor(functionName: DesktopAgentFunctionNames): string {
+  switch (functionName) {
+    case 'findIntent':
+      return APIDocumentation.findIntent;
+    case 'findIntentsByContext':
+      return APIDocumentation.findIntentsByContext;
+    case 'open':
+      return APIDocumentation.open;
+    case 'findInstances':
+      return APIDocumentation.findInstances;
+    case 'getAppMetadata':
+      return APIDocumentation.appMetadata;
+    case 'raiseIntent':
+      return APIDocumentation.raiseIntent;
+    case 'raiseIntentForContext':
+      return APIDocumentation.raiseIntentForContext;
+  }
+}
 
 function sameAppIdentifier(a: AppIdentifier, b: AppIdentifier): boolean {
   return a.appId === b.appId && a.instanceId === b.instanceId;
